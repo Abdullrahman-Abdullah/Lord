@@ -126,7 +126,7 @@ const app = {
             id: Date.now(),
             name: document.getElementById('customerName').value,
             phone: document.getElementById('customerPhone').value,
-            joinDate: new Date().toLocaleDateString('ar-SA'),
+            joinDate: new Date().toLocaleDateString('ar-US'),
             credit: 0
         };
         
@@ -485,7 +485,7 @@ const app = {
 
         const groupedSessions = {};
         customerSessions.forEach(session => {
-            const sessionDate = new Date(session.date).toLocaleDateString('ar-SA');
+            const sessionDate = new Date(session.date).toLocaleDateString('ar-US');
             if (!groupedSessions[sessionDate]) {
                 groupedSessions[sessionDate] = [];
             }
@@ -513,7 +513,7 @@ const app = {
                 sessionItem.innerHTML = `
                     <div class="row align-items-center">
                         <div class="col-md-3">
-                            <strong>${new Date(session.date).toLocaleTimeString('ar-SA')}</strong>
+                            <strong>${new Date(session.date).toLocaleTimeString('ar-US')}</strong>
                             ${session.usedCredit > 0 ? '<span class="free-session-badge">رصيد</span>' : ''}
                         </div>
                         <div class="col-md-2">
