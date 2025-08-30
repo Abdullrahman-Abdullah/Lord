@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>نظام إدارة عملاء صالة الألعاب</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <div class="header text-center">
+            <h1><i class="fas fa-gamepad me-2"></i>نظام إدارة عملاء صالة الألعاب</h1>
+            <p class="mb-0">إدارة العملاء وجلسات اللعب وتقارير الأداء</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stats-box">
+                    <i class="fas fa-users"></i>
+                    <h3 id="totalCustomers">0</h3>
+                    <p>إجمالي العملاء</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-box">
+                    <i class="fas fa-clock"></i>
+                    <h3 id="totalSessions">0</h3>
+                    <p>جلسات اللعب</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-box">
+                    <i class="fas fa-coins"></i>
+                    <h3 id="totalRevenue">0</h3>
+                    <p>إجمالي الإيرادات</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-box">
+                    <i class="fas fa-gamepad"></i>
+                    <h3 id="activeSessions">0</h3>
+                    <p>جلسات نشطة</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-user-plus me-2"></i>إضافة عميل جديد
+            </div>
+            <div class="form-container">
+                <form id="customerForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="customerName" class="form-label">الاسم الكامل</label>
+                            <input type="text" class="form-control" id="customerName" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="customerPhone" class="form-label">رقم الهاتف</label>
+                            <input type="tel" class="form-control" id="customerPhone" required>
+                        </div>
+                        <div class="col-md-12">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>حفظ العميل
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-users me-2"></i>قائمة العملاء</span>
+                <div class="search-box" style="width: 300px;">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="ابحث عن عميل...">
+                </div>
+            </div>
+            <div class="form-container">
+                <div id="customersList">
+                    <div class="text-center py-5">
+                        <i class="fas fa-users fa-3x mb-3 text-muted"></i>
+                        <p class="text-muted">لا يوجد عملاء لعرضهم</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addSessionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">إضافة جلسة لعب للعميل: <span id="sessionCustomerName"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="sessionForm">
+                        <input type="hidden" id="sessionCustomerId">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="sessionDuration" class="form-label">مدة الجلسة (دقائق)</label>
+                                <div class="time-input-group">
+                                    <input type="number" class="form-control" id="sessionDuration" min="1" step="1" required value="60">
+                                    <button type="button" class="btn btn-outline-primary" id="syncTime">
+                                        <i class="fas fa-sync-alt me-1"></i> مزامنة الوقت
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="sessionPrice" class="form-label">سعر الساعة (ل.س)</label>
+                                <input type="number" class="form-control" id="sessionPrice" min="0" required value="5000">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check mt-4">
+                                    <input class="form-check-input" type="checkbox" id="sessionPaid">
+                                    <label class="form-check-label" for="sessionPaid">
+                                        تم الدفع
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="sessionTotal" class="form-label">المبلغ الإجمالي (ل.س)</label>
+                                <input type="number" class="form-control" id="sessionTotal" readonly>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label for="sessionNotes" class="form-label">ملاحظات</label>
+                                <textarea class="form-control" id="sessionNotes" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <div class="credit-option" id="creditOption">
+                        <h6>استخدام الرصيد المتاح</h6>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="useCredit">
+                            <label class="form-check-label" for="useCredit">
+                                استخدام الرصيد للعب مجاناً
+                            </label>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p>الرصيد المتاح: <span id="availableCredit">0</span> دقيقة</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p>الرصيد المستخدم: <span id="usedCredit">0</span> دقيقة</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="session-report mt-4">
+                        <h6>تقرير الجلسة</h6>
+                        <div class="session-header">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <strong>المدة:</strong> <span id="reportDuration">0</span> دقيقة
+                                </div>
+                                <div class="col-md-4">
+                                    <strong>سعر الساعة:</strong> <span id="reportPrice">0</span> ل.س
+                                </div>
+                                <div class="col-md-4">
+                                    <strong>الإجمالي:</strong> <span id="reportTotal">0</span> ل.س
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" id="saveSession">حفظ الجلسة</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="sessionsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">جلسات اللعب لل العميل: <span id="sessionsCustomerName"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="customer-stats mb-4">
+                        <h5>إحصائيات العميل</h5>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="stats-box">
+                                    <i class="fas fa-clock"></i>
+                                    <h4 id="customerTotalTime">0</h4>
+                                    <p>إجمالي وقت اللعب</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stats-box">
+                                    <i class="fas fa-coins"></i>
+                                    <h4 id="customerTotalSpent">0</h4>
+                                    <p>إجمالي المدفوعات</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stats-box">
+                                    <i class="fas fa-gamepad"></i>
+                                    <h4 id="customerSessionsCount">0</h4>
+                                    <p>عدد الجلسات</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3 p-3 bg-light rounded">
+                            <h6>رصيد الوقت المتاح: <span id="customerCredit">0</span> دقيقة</h6>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6>جلسات العميل: <span id="totalSessionsCount">0</span></h6>
+                        <button class="btn btn-sm btn-primary" id="addNewSession">
+                            <i class="fas fa-plus me-1"></i> إضافة جلسة
+                        </button>
+                    </div>
+                    
+                    <div id="sessionsList">
+                        <div class="text-center py-4">
+                            <i class="fas fa-clock fa-2x mb-2 text-muted"></i>
+                            <p class="text-muted">لا توجد جلسات لعرضها</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <div class="card mt-5">
+    <div class="card-header">
+        <i class="fas fa-tools me-2"></i>أدوات إدارة البيانات
+    </div>
+    <div class="form-container d-flex justify-content-between flex-wrap">
+        <button class="btn btn-info flex-grow-1 mx-2 mb-2 mb-md-0" id="exportData">
+            <i class="fas fa-upload me-1"></i> تصدير البيانات 
+        </button>
+        <label for="importFile" class="btn btn-warning flex-grow-1 mx-2 mb-2 mb-md-0">
+            <i class="fas fa-download me-1"></i> استيراد البيانات 
+            <input type="file" id="importFile" style="display: none;">
+        </label>
+        <button class="btn btn-danger flex-grow-1 mx-2" id="clearAllData">
+            <i class="fas fa-trash-alt me-1"></i> مسح جميع البيانات
+        </button>
+    </div>
+</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="scripts/script.js"></script>
+</body>
+</html>
